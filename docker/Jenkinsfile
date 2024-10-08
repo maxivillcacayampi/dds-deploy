@@ -1,0 +1,48 @@
+pipeline{
+    agent any 
+    environment{
+        WORK_DIR="/var/jenkins_home/${BUILD_ID}"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checkout del TP PROYECTO'
+                dir("${WORK_DIR}") {
+                    git branch: "main",
+                        credentialsId: 'f9ba688c-898b-4262-90e4-cdceac13758d',
+                        url: 'https://github.com/maxivillcacayampi/dds-deploy.git'
+                }
+            }
+        }
+        stage('Build with Maven') {
+            steps {
+                script {
+                    dir("${WORK_DIR}"){
+                        def mavenHome = tool 'maven'; // Asegúrate de que este sea el nombre correcto
+                        sh """
+                        ${mavenHome}/bin/mvn clean install -DskipTests
+                        """
+                    }
+                        
+                }
+            }
+        }
+        stage('Sonar Analytics') {
+            steps {
+                script {
+                    def scannerHome = tool 'sonar scanner 6.2';
+                    withSonarQubeEnv('sonarqube') {
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=maxivillcacayampi_dds-deploy_ae366ae0-2ed6-485d-8b00-0d5c9c0a2e3b \
+                        -Dsonar.sources=${WORK_DIR}/src \
+                        -Dsonar.java.binaries=${WORK_DIR}/target/classes \
+                        -Dsonar.projectBaseDir=${WORK_DIR}/
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
