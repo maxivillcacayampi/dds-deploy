@@ -14,24 +14,27 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <build>
+   <build>
         <plugins>
-		<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-					      <executions>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version> <!-- Especifica la versión del plugin -->
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
                     <execution>
-                        <id>copy-dependencies</id>
+                        <id>make-assembly</id> <!-- Cambié el ID para mayor claridad -->
                         <phase>package</phase>
-                        <goals><goal>assembly</goal></goals>
+                        <goals>
+                            <goal>single</goal> <!-- Usa 'single' para crear el archivo con dependencias -->
+                        </goals>
                     </execution>
                 </executions>
-
-			</plugin>
+            </plugin>
         </plugins>
     </build>
 
