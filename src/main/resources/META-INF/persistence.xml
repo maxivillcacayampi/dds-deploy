@@ -9,15 +9,12 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 
-    <properties>
-    <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-    <property name="hibernate.connection.url" value="${javax__persistence__jdbc__url}"/>
-    <property name="hibernate.connection.username" value="${javax__persistence__jdbc__user}"/>
-    <property name="hibernate.connection.password" value="${javax__persistence__jdbc__password}"/>
-    <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-    <property name="hibernate.hbm2ddl.auto" value="${hibernate__hbm2ddl__auto}"/>
-    <property name="hibernate.show_sql" value="true"/>
-    </properties>
+        <properties>
+            <property name="hibernate.archive.autodetection" value="class" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="use_sql_comments" value="true" />
+        </properties>
 
     </persistence-unit>
 
