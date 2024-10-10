@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: appx-api-deployment
 spec:
-  replicas: 2  # Puedes ajustar la cantidad de réplicas según sea necesario
+  replicas: 1  # Puedes ajustar la cantidad de réplicas según sea necesario
   selector:
     matchLabels:
       app: appx-api
