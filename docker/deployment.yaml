@@ -34,7 +34,7 @@ kind: Service
 metadata:
   name: appx-api-service
 spec:
-  type: NodePort  # Puedes cambiar a LoadBalancer si corres en un proveedor cloud
+  type: LoadBalancer  # Puedes cambiar a LoadBalancer si corres en un proveedor cloud
   selector:
     app: appx-api
   ports:
