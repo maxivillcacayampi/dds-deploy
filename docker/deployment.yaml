@@ -25,7 +25,7 @@ spec:
         - name: javax__persistence__jdbc__password
           value: "123"
         - name: javax__persistence__jdbc__url
-          value: "jdbc:postgresql://dbservice/dblibros"
+          value: "jdbc:postgresql://postgres-service:5432/dblibros" # URL del servicio de PostgreSQL
         - name: javax__persistence__jdbc__user
           value: "postgres"
 ---
@@ -34,15 +34,13 @@ kind: Service
 metadata:
   name: appx-api-service
 spec:
-  type: LoadBalancer  # Puedes cambiar a LoadBalancer si corres en un proveedor cloud
+  type: LoadBalancer  # Mantener como LoadBalancer
   selector:
     app: appx-api
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-      nodePort: 30000  # Un puerto entre 30000-32767 para acceder desde fuera de Minikube
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -77,7 +75,18 @@ spec:
       - name: postgres-storage
         persistentVolumeClaim:
           claimName: postgres-pvc
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service  # Servicio para PostgreSQL
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
