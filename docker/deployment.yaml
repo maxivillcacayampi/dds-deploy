@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appx-api-deployment
+spec:
+  replicas: 2  # Puedes ajustar la cantidad de réplicas según sea necesario
+  selector:
+    matchLabels:
+      app: appx-api
+  template:
+    metadata:
+      labels:
+        app: appx-api
+    spec:
+      containers:
+      - name: appx-api
+        image: maximilianovillcacayampi/tpcredicoop-repo:appx-api-latest # Cambia esto a tu imagen real de DockerHub
+        ports:
+        - containerPort: 8080
+        env:
+        - name: hibernate__hbm2ddl__auto
+          value: "create"
+        - name: javax__persistence__jdbc__driver
+          value: "org.postgresql.Driver"
+        - name: javax__persistence__jdbc__password
+          value: "123"
+        - name: javax__persistence__jdbc__url
+          value: "jdbc:postgresql://dbservice/dblibros"
+        - name: javax__persistence__jdbc__user
+          value: "postgres"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appx-api-service
+spec:
+  type: NodePort  # Puedes cambiar a LoadBalancer si corres en un proveedor cloud
+  selector:
+    app: appx-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30000  # Un puerto entre 30000-32767 para acceder desde fuera de Minikube
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:latest
+        env:
+        - name: POSTGRES_DB
+          value: "dblibros"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "123"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
