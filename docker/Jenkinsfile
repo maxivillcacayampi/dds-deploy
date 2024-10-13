@@ -44,5 +44,34 @@ pipeline{
                 }
             }
         }
+        stage('Docker Build'){
+            agent { label 'minikube' }
+            steps { 
+                echo 'Building Docker Image'
+                dir("/home/maxi2/tpcredicoop/dds-deploy") {
+                sh 'ls -l'
+                sh 'docker build -t appx-api:latest .'
+                }
+            }
+        }
+        stage('Docker Push') {
+            agent { label 'minikube' }
+            steps {
+                echo 'Pushing Docker Image'
+                sh '''
+                docker tag appx-api:latest maximilianovillcacayampi/tpcredicoop-repo:appx-api-latest
+                docker push maximilianovillcacayampi/tpcredicoop-repo:appx-api-latest
+                '''
+            }        
+        }
+        stage('Restart Deployment') {
+            agent { label 'minikube' }
+            steps {
+	            sh '''
+            	alias kubectl="minikube kubectl --"
+            	kubectl rollout restart deployment appx-api-deployment
+	            '''
+            }
+        }
     }
 }
