@@ -1,4 +1,5 @@
- name: Backup Redmine Database
+---
+- name: Backup Redmine Database
   hosts: redmine_server
   become: yes
   vars:
@@ -10,7 +11,7 @@
   tasks:
     - name: Create backup directory
       file:
-	path: /home/user/backups
+        path: /home/user/backups
         state: directory
         owner: root
         group: root
@@ -18,7 +19,6 @@
 
     - name: Dump MySQL database
       command: >
-        docker exec redmine-db-1 sh -c
-        "mysqldump -u {{ db_user }} -p{{ db_password }} {{ db_name }} > /var/lib/mysql-backups/redmine_backup.sql"
+        docker exec redmine-db-1 sh -c "mysqldump -u {{ db_user }} -p{{ db_password }} {{ db_name }} > /var/lib/mysql-backups/redmine_backup.sql"
       args:
-	creates: "/home/user/backups/redmine_backup.sql"
+        creates: "{{ backup_path }}"
